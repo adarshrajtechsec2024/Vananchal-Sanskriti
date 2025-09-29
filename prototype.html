@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jharkhand Tourism Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #ff9800;
+            --accent-color: #1565c0;
+            --light-bg: #f5f5f5;
+            --dark-bg: #1b5e20;
+            --text-color: #333;
+            --light-text: #fff;
+            --chatbot-bg: #e8f5e9;
+            --user-msg-bg: #e3f2fd;
+            --bot-msg-bg: #f1f8e9;
+            --background-opacity: 0.85;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #388e3c;
+            --secondary-color: #ffa726;
+            --accent-color: #64b5f6;
+            --light-bg: #121212;
+            --dark-bg: #1b5e20;
+            --text-color: #e0e0e0;
+            --light-text: #f5f5f5;
+            --chatbot-bg: #1e1e1e;
+            --user-msg-bg: #2d2d2d;
+            --bot-msg-bg: #252525;
+            --background-opacity: 0.9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-bg));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            opacity: 0.6;
+            transition: background-image 1.5s ease-in-out;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .tagline {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--primary-color);
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chatbot-container {
+            flex: 2;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            backdrop-filter: blur(5px);
+        }
+
+        .chat-header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--chatbot-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--user-msg-bg);
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--bot-msg-bg);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .message-action {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1rem;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .chat-input button {
+            margin-left: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .chat-input button:hover {
+            background-color: var(--dark-bg);
+        }
+
+        .voice-btn {
+            background-color: var(--accent-color) !important;
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 15px;
+            background-color: var(--light-bg);
+            border-top: 1px solid #ddd;
+        }
+
+        .quick-reply {
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .quick-reply:hover {
+            background-color: #f57c00;
+        }
+
+        .features-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .features-panel h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .feature-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-category {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .feature-category:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-category i {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .transport-options {
+            margin-top: 20px;
+        }
+
+        .transport-options h3 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .transport-icons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .transport-icon {
+            text-align: center;
+        }
+
+        .transport-icon i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .itinerary-planner {
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .itinerary-planner h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .planner-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .option-card {
+            background: linear-gradient(135deg, var(--secondary-color), #f57c00);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .calendar-container {
+            display: none;
+            margin-top: 20px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-cell {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--bot-msg-bg);
+        }
+
+        .calendar-cell:hover {
+            background-color: var(--user-msg-bg);
+        }
+
+        .calendar-cell.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-cell.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+        }
+
+        .itinerary-display {
+            display: none;
+            margin-top: 20px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .itinerary-day {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .itinerary-day:last-child {
+            border-bottom: none;
+        }
+
+        .itinerary-day h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .itinerary-activities {
+            list-style-type: none;
+        }
+
+        .itinerary-activities li {
+            padding: 8px 5px;
+            border-left: 3px solid var(--secondary-color);
+            margin-bottom: 5px;
+            padding-left: 10px;
+            background-color: var(--bot-msg-bg);
+        }
+
+        .map-container {
+            display: none;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .map-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #map {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .weather-widget {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .weather-card {
+            background: linear-gradient(135deg, var(--accent-color), #1976d2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            width: 180px;
+            text-align: center;
+        }
+
+        .weather-card h4 {
+            margin-bottom: 10px;
+        }
+
+        .weather-temp {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .weather-desc {
+            font-size: 0.9rem;
+        }
+
+        .cultural-section {
+            display: none;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .cultural-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cultural-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .cultural-item {
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cultural-item img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .cultural-content {
+            padding: 15px;
+        }
+
+        .cultural-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .cost-estimator {
+            display: none;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, var(--background-opacity));
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .cost-estimator h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cost-breakdown {
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+
+        .bookmark-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .bookmark-btn.active {
+            color: gold;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .planner-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .option-card {
+                width: 100%;
+            }
+            
+            .transport-icons {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Jharkhand Tourism Chatbot</h1>
+            <p class="tagline">Your digital guide to explore the heart of India</p>
+            <div class="header-content">
+                <div class="language-selector">
+                    <span>Language:</span>
+                    <select id="language-select">
+                        <option value="en">English</option>
+                        <option value="hi">Hindi</option>
+                        <option value="san">Santhali</option>
+                        <option value="kha">Khortha</option>
+                        <option value="ngp">Nagpuri</option>
+                        <option value="kur">Kurukh</option>
+                        <option value="mun">Mundari</option>
+                        <option value="ho">Ho</option>
+                        <option value="pan">Panchpargania</option>
+                        <option value="bhu">Bhumij</option>
+                        <option value="odi">Odia</option>
+                    </select>
+                </div>
+                <button class="theme-toggle" id="theme-toggle">🌙</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="chatbot-container">
+                <div class="chat-header">
+                    <i class="fas fa-robot"></i>
+                    <h2>Tourist Assistant</h2>
+                    <span class="status-indicator"></span>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot-message">
+                        Hi there! I'm your Jharkhand tourism assistant. How can I help you today?
+                        <div class="message-actions">
+                            <button class="message-action" title="Speak"><i class="fas fa-volume-up"></i></button>
+                            <button class="message-action" title="Bookmark"><i class="fas fa-bookmark"></i></button>
+                        </div>
+                    </div>
+                    <div class="message bot-message">
+                        I can help you with information about destinations, transportation, accommodations, local markets, and even plan your itinerary!
+                        <div class="message-actions">
+                            <button class="message-action" title="Speak"><i class="fas fa-volume-up"></i></button>
+                            <button class="message-action" title="Bookmark"><i class="fas fa-bookmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-replies">
+                    <div class="quick-reply" data-msg="Best waterfalls in Jharkhand">Waterfalls</div>
+                    <div class="quick-reply" data-msg="Transportation options">Transport</div>
+                    <div class="quick-reply" data-msg="Wildlife destinations">Wildlife</div>
+                    <div class="quick-reply" data-msg="Local markets">Markets</div>
+                    <div class="quick-reply" data-msg="Show map">Map</div>
+                    <div class="quick-reply" data-msg="Cultural experiences">Culture</div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="user-input" placeholder="Type your message here...">
+                    <button id="voice-btn" class="voice-btn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="features-panel">
+                <h2>Explore Jharkhand</h2>
+                <div class="feature-categories">
+                    <div class="feature-category" data-category="heritage">
+                        <i class="fas fa-monument"></i>
+                        <p>Heritage</p>
+                    </div>
+                    <div class="feature-category" data-category="religious">
+                        <i class="fas fa-place-of-worship"></i>
+                        <p>Religious</p>
+                    </div>
+                    <div class="feature-category" data-category="adventure">
+                        <i class="fas fa-hiking"></i>
+                        <p>Adventure</p>
+                    </div>
+                    <div class="feature-category" data-category="wildlife">
+                        <i class="fas fa-paw"></i>
+                        <p>Wildlife</p>
+                    </div>
+                    <div class="feature-category" data-category="culture">
+                        <i class="fas fa-theater-masks"></i>
+                        <p>Culture</p>
+                    </div>
+                    <div class="feature-category" data-category="markets">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Markets</p>
+                    </div>
+                </div>
+                
+                <div class="weather-widget" id="weather-widget">
+                    <!-- Weather data will be populated here -->
+                </div>
+                
+                <div class="transport-options">
+                    <h3>Transport Options</h3>
+                    <div class="transport-icons">
+                        <div class="transport-icon">
+                            <i class="fas fa-train"></i>
+                            <p>Trains</p>
+                        </div>
+                        <div class="transport-icon">
+                            <i class="fas fa-bus"></i>
+                            <p>Buses</p>
+                        </div>
+                        <div class="transport-icon">
+                            <i class="fas fa-taxi"></i>
+                            <p>Taxis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container" id="map-container">
+            <h2>Jharkhand Tourist Map</h2>
+            <div id="map"></div>
+        </div>
+
+        <div class="cultural-section" id="cultural-section">
+            <h2>Cultural Experiences</h2>
+            <div class="cultural-grid" id="cultural-grid">
+                <!-- Cultural items will be populated here -->
+            </div>
+        </div>
+
+        <div class="cost-estimator" id="cost-estimator">
+            <h2>Trip Cost Estimation</h2>
+            <div class="cost-breakdown" id="cost-breakdown">
+                <!-- Cost breakdown will be populated here -->
+            </div>
+        </div>
+
+        <div class="itinerary-planner">
+            <h2>Personalized Itinerary Planner</h2>
+            <div class="planner-options">
+                <div class="option-card" data-days="1">
+                    <i class="fas fa-1x fa-calendar-alt"></i>
+                    <p>1 Day Plan</p>
+                </div>
+                <div class="option-card" data-days="3">
+                    <i class="fas fa-1x fa-calendar-day"></i>
+                    <p>3 Day Plan</p>
+                </div>
+                <div class="option-card" data-days="7">
+                    <i class="fas fa-1x fa-calendar-week"></i>
+                    <p>7 Day Plan</p>
+                </div>
+            </div>
+            
+            <div class="calendar-container" id="calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="current-month">September 2023</h3>
+                    <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar will be generated here -->
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button id="generate-itinerary" style="padding: 10px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer;">Generate Itinerary</button>
+                </div>
+            </div>
+            
+            <div class="itinerary-display" id="itinerary-display">
+                <h3>Your Jharkhand Itinerary</h3>
+                <div id="itinerary-content">
+                    <!-- Itinerary will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Jharkhand Tourism Chatbot © 2026 | Powered by AI & Blockchain Technology</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const voiceBtn = document.getElementById('voice-btn');
+            const quickReplies = document.querySelectorAll('.quick-reply');
+            const featureCategories = document.querySelectorAll('.feature-category');
+            const optionCards = document.querySelectorAll('.option-card');
+            const calendarContainer = document.getElementById('calendar-container');
+            const itineraryDisplay = document.getElementById('itinerary-display');
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthElement = document.getElementById('current-month');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const generateItineraryBtn = document.getElementById('generate-itinerary');
+            const itineraryContent = document.getElementById('itinerary-content');
+            const themeToggle = document.getElementById('theme-toggle');
+            const mapContainer = document.getElementById('map-container');
+            const culturalSection = document.getElementById('cultural-section');
+            const culturalGrid = document.getElementById('cultural-grid');
+            const costEstimator = document.getElementById('cost-estimator');
+            const costBreakdown = document.getElementById('cost-breakdown');
+            const weatherWidget = document.getElementById('weather-widget');
+            
+            // Variables
+            let selectedDays = 1;
+            let currentDate = new Date();
+            let selectedDate = null;
+            let recognition = null;
+            let map = null;
+            let markers = [];
+            let isListening = false;
+            const backgroundImages = [
+                'url("https://images.unsplash.com/photo-1599315498193-3c583a5c9db3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
+                'url("https://images.unsplash.com/photo-1587477703680-691c41c4b51e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
+                'url("https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
+                'url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")'
+            ];
+            let currentBgIndex = 0;
+            
+            // Sample responses for the chatbot
+            const responses = {
+                "waterfalls": "Jharkhand has beautiful waterfalls! Dassam Falls, Hundru Falls, and Jonha Falls are some of the most popular ones. Dassam Falls is near Ranchi and is a great spot for photography.",
+                "transport": "In Jharkhand, you can travel by trains, buses, taxis, and auto-rickshaws. For longer distances, there are flights from Ranchi to major cities. Would you like specific route information?",
+                "wildlife": "Jharkhand has rich wildlife! Betla National Park, Palamau Tiger Reserve, and Dalma Wildlife Sanctuary are must-visit places for nature lovers.",
+                "markets": "For local shopping, visit Main Market in Ranchi, Tribal Haat in Dimna for handicrafts, or Sunday Market in Jamshedpur. You'll find beautiful tribal artifacts and handloom products!",
+                "map": "Here's an interactive map of Jharkhand with major tourist destinations marked.",
+                "culture": "Jharkhand has a rich tribal culture with diverse dance forms, music, and handicrafts. Let me show you some cultural experiences."
+            };
+            
+            // Tourist spots data for map
+            const touristSpots = [
+                {
+                    name: "Baidyanath Dham, Deoghar",
+                    lat: 24.4911,
+                    lng: 86.6995,
+                    info: "One of the twelve Jyotirlingas in India, it's an important Hindu pilgrimage site."
+                },
+                {
+                    name: "Hundru Falls, Ranchi",
+                    lat: 23.4590,
+                    lng: 85.6432,
+                    info: "A beautiful waterfall on the Subarnarekha River, creating a stunning 98-meter drop."
+                },
+                {
+                    name: "Netarhat",
+                    lat: 23.4833,
+                    lng: 84.2667,
+                    info: "Known as the 'Queen of Chotanagpur', this hill station offers breathtaking sunrise and sunset views."
+                },
+                {
+                    name: "Patratu Valley",
+                    lat: 23.6356,
+                    lng: 85.3021,
+                    info: "Famous for its serpentine Patratu Valley road and scenic beauty, a popular destination for biking enthusiasts."
+                },
+                {
+                    name: "Betla National Park",
+                    lat: 23.8876,
+                    lng: 84.1884,
+                    info: "A national park and tiger reserve with rich biodiversity and ancient forts."
+                },
+                {
+                    name: "Dassam Falls",
+                    lat: 23.3580,
+                    lng: 85.6600,
+                    info: "A magnificent waterfall on the Kachni River, also known as Dassam Ghagh."
+                }
+            ];
+            
+            // Cultural experiences data
+            const culturalData = [
+                {
+                    title: "Chhau Dance",
+                    image: "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+                    description: "A traditional tribal dance form with martial arts elements, performed during festivals."
+                },
+                {
+                    title: "Santhal Painting",
+                    image: "https://images.unsplash.com/photo-1585637071663-799845ad5212?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+                    description: "Vibrant folk art depicting daily life and nature, characterized by bright colors and simple motifs."
+                },
+                {
+                    title: "Sarhul Festival",
+                    image: "https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+                    description: "A spring festival celebrated by tribal communities to worship nature and ancestors."
+                },
+                {
+                    title: "Bamboo Craft",
+                    image: "https://images.unsplash.com/photo-1597773150796-e5c14ebecbf5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+                    description: "Skilled artisans create beautiful household items and decorative pieces from bamboo."
+                }
+            ];
+            
+            // Weather data (simulated)
+            const weatherData = [
+                { location: "Ranchi", temp: "28°C", desc: "Partly Cloudy" },
+                { location: "Deoghar", temp: "30°C", desc: "Sunny" },
+                { location: "Netarhat", temp: "22°C", desc: "Misty" },
+                { location: "Jamshedpur", temp: "32°C", desc: "Sunny" }
+            ];
+            
+            // Cost estimation data
+            const costData = {
+                "Ranchi": { hotel: 2500, transport: 1500, food: 1200, attractions: 500 },
+                "Deoghar": { hotel: 2000, transport: 1000, food: 1000, attractions: 300 },
+                "Netarhat": { hotel: 3000, transport: 2000, food: 1500, attractions: 700 },
+                "Jamshedpur": { hotel: 2800, transport: 1800, food: 1300, attractions: 600 }
+            };
+            
+            // Itinerary data
+            const itineraryData = {
+                1: [
+                    "Day 1: Explore Ranchi - Visit Jagannath Temple, Ranchi Lake, and Tagore Hill"
+                ],
+                3: [
+                    "Day 1: Explore Ranchi - Visit Jagannath Temple, Ranchi Lake, and Tagore Hill",
+                    "Day 2: Visit Dassam Falls and Jonha Falls - Enjoy the scenic beauty and photography",
+                    "Day 3: Discover local tribal culture at Tribal Research Institute Museum and visit Hundru Falls"
+                ],
+                7: [
+                    "Day 1: Arrive in Ranchi - Visit Jagannath Temple and Ranchi Lake",
+                    "Day 2: Explore Tagore Hill and nearby attractions - Evening at Kanke Dam",
+                    "Day 3: Day trip to Dassam Falls and Jonha Falls - Enjoy nature's beauty",
+                    "Day 4: Travel to Netarhat - Visit Netarhat Hills and Magnolia Point",
+                    "Day 5: Explore Betla National Park - Wildlife safari and visit Lodh Falls",
+                    "Day 6: Visit Deoghar - Baba Baidyanath Temple and Naulakha Mandir",
+                    "Day 7: Explore local markets for souvenirs - Depart from Ranchi"
+                ]
+            };
+            
+            // Initialize the application
+            function init() {
+                // Start background slideshow
+                startSlideshow();
+                
+                // Initialize voice recognition if available
+                initVoiceRecognition();
+                
+                // Initialize map
+                initMap();
+                
+                // Populate cultural section
+                populateCulturalSection();
+                
+                // Populate weather widget
+                populateWeatherWidget();
+                
+                // Set up event listeners
+                setupEventListeners();
+            }
+            
+            // Start background slideshow
+            function startSlideshow() {
+                setInterval(() => {
+                    document.body.style.backgroundImage = backgroundImages[currentBgIndex];
+                    currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+                }, 5000);
+            }
+            
+            // Initialize voice recognition
+            function initVoiceRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = 'en-US';
+                    
+                    recognition.onresult = function(event) {
+                        const transcript = event.results[0][0].transcript;
+                        userInput.value = transcript;
+                        handleUserMessage();
+                    };
+                    
+                    recognition.onerror = function(event) {
+                        console.error('Speech recognition error', event.error);
+                        addMessage("Sorry, I didn't catch that. Could you please try again?", false);
+                        isListening = false;
+                        voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    };
+                    
+                    recognition.onend = function() {
+                        isListening = false;
+                        voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    };
+                } else {
+                    voiceBtn.style.display = 'none';
+                }
+            }
+            
+            // Initialize map
+            function initMap() {
+                map = L.map('map').setView([23.6345, 85.3803], 8);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Add markers for tourist spots
+                touristSpots.forEach(spot => {
+                    const marker = L.marker([spot.lat, spot.lng]).addTo(map)
+                        .bindPopup(<b>${spot.name}</b><br>${spot.info});
+                    markers.push(marker);
+                });
+            }
+            
+            // Populate cultural section
+            function populateCulturalSection() {
+                culturalData.forEach(item => {
+                    const culturalItem = document.createElement('div');
+                    culturalItem.classList.add('cultural-item');
+                    
+                    culturalItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}">
+                        <div class="cultural-content">
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    `;
+                    
+                    culturalGrid.appendChild(culturalItem);
+                });
+            }
+            
+            // Populate weather widget
+            function populateWeatherWidget() {
+                weatherData.forEach(weather => {
+                    const weatherCard = document.createElement('div');
+                    weatherCard.classList.add('weather-card');
+                    
+                    weatherCard.innerHTML = `
+                        <h4>${weather.location}</h4>
+                        <div class="weather-temp">${weather.temp}</div>
+                        <div class="weather-desc">${weather.desc}</div>
+                    `;
+                    
+                    weatherWidget.appendChild(weatherCard);
+                });
+            }
+            
+            // Set up event listeners
+            function setupEventListeners() {
+                sendBtn.addEventListener('click', handleUserMessage);
+                
+                userInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleUserMessage();
+                    }
+                });
+                
+                voiceBtn.addEventListener('click', toggleVoiceRecognition);
+                
+                quickReplies.forEach(reply => {
+                    reply.addEventListener('click', function() {
+                        const msg = this.getAttribute('data-msg');
+                        userInput.value = msg;
+                        handleUserMessage();
+                    });
+                });
+                
+                featureCategories.forEach(category => {
+                    category.addEventListener('click', function() {
+                        const categoryType = this.getAttribute('data-category');
+                        let message = "";
+                        
+                        switch(categoryType) {
+                            case 'heritage':
+                                message = "Tell me about heritage sites in Jharkhand";
+                                break;
+                            case 'religious':
+                                message = "What are the famous religious places in Jharkhand?";
+                                break;
+                            case 'adventure':
+                                message = "What adventure activities are available in Jharkhand?";
+                                break;
+                            case 'wildlife':
+                                message = "Information about wildlife in Jharkhand";
+                                break;
+                            case 'culture':
+                                message = "Tell me about tribal culture in Jharkhand";
+                                culturalSection.style.display = 'block';
+                                break;
+                            case 'markets':
+                                message = "Where can I find local markets in Jharkhand?";
+                                break;
+                        }
+                        
+                        userInput.value = message;
+                        handleUserMessage();
+                    });
+                });
+                
+                // Itinerary planner event listeners
+                optionCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        selectedDays = parseInt(this.getAttribute('data-days'));
+                        calendarContainer.style.display = 'block';
+                        itineraryDisplay.style.display = 'none';
+                        
+                        // Remove any previous selections
+                        const selected = document.querySelector('.calendar-cell.selected');
+                        if (selected) {
+                            selected.classList.remove('selected');
+                        }
+                        selectedDate = null;
+                        
+                        // Generate calendar if not already generated
+                        if (calendarGrid.children.length === 0) {
+                            generateCalendar();
+                        }
+                    });
+                });
+                
+                prevMonthBtn.addEventListener('click', function() {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    generateCalendar();
+                });
+                
+                nextMonthBtn.addEventListener('click', function() {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    generateCalendar();
+                });
+                
+                generateItineraryBtn.addEventListener('click', generateItinerary);
+                
+                // Theme toggle
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // Toggle voice recognition
+            function toggleVoiceRecognition() {
+                if (!recognition) return;
+                
+                if (isListening) {
+                    recognition.stop();
+                    voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                } else {
+                    recognition.start();
+                    voiceBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                    addMessage("I'm listening...", false);
+                }
+                
+                isListening = !isListening;
+            }
+            
+            // Toggle theme
+            function toggleTheme() {
+                const isDark = document.body.getAttribute('data-theme') === 'dark';
+                document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+                themeToggle.textContent = isDark ? '🌙' : '🌞';
+            }
+            
+            // Function to add a message to the chat
+            function addMessage(text, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+                
+                messageDiv.innerHTML = `
+                    ${text}
+                    <div class="message-actions">
+                        <button class="message-action" title="Speak" onclick="speakText('${text.replace(/'/g, "\\'")}')"><i class="fas fa-volume-up"></i></button>
+                        <button class="message-action" title="Bookmark"><i class="fas fa-bookmark"></i></button>
+                    </div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to handle user message
+            function handleUserMessage() {
+                const message = userInput.value.trim();
+                if (message) {
+                    addMessage(message, true);
+                    userInput.value = '';
+                    
+                    // Simulate bot response after a short delay
+                    setTimeout(() => {
+                        let botResponse = "I can help you with information about Jharkhand tourism. What would you like to know?";
+                        
+                        // Check for keywords in the message
+                        const lowerMsg = message.toLowerCase();
+                        if (lowerMsg.includes('waterfall')) {
+                            botResponse = responses['waterfalls'];
+                        } else if (lowerMsg.includes('transport')) {
+                            botResponse = responses['transport'];
+                        } else if (lowerMsg.includes('wildlife')) {
+                            botResponse = responses['wildlife'];
+                        } else if (lowerMsg.includes('market')) {
+                            botResponse = responses['markets'];
+                        } else if (lowerMsg.includes('map')) {
+                            botResponse = responses['map'];
+                            mapContainer.style.display = 'block';
+                        } else if (lowerMsg.includes('culture')) {
+                            botResponse = responses['culture'];
+                            culturalSection.style.display = 'block';
+                        } else if (lowerMsg.includes('cost') || lowerMsg.includes('price') || lowerMsg.includes('budget')) {
+                            botResponse = "Here's an estimated cost breakdown for popular destinations:";
+                            showCostEstimator();
+                        } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+                            botResponse = "Hello! Welcome to Jharkhand Tourism Assistant. How can I help you today?";
+                        } else if (lowerMsg.includes('itinerary') || lowerMsg.includes('plan')) {
+                            botResponse = "I can help you create a personalized itinerary! Please select the duration from the itinerary planner below.";
+                        }
+                        
+                        addMessage(botResponse, false);
+                        
+                        // Speak the response
+                        speakText(botResponse);
+                    }, 1000);
+                }
+            }
+            
+            // Function to speak text
+            function speakText(text) {
+                if ('speechSynthesis' in window) {
+                    const speech = new SpeechSynthesisUtterance();
+                    speech.text = text;
+                    speech.volume = 1;
+                    speech.rate = 1;
+                    speech.pitch = 1;
+                    
+                    window.speechSynthesis.speak(speech);
+                }
+            }
+            
+            // Function to show cost estimator
+            function showCostEstimator() {
+                costEstimator.style.display = 'block';
+                costBreakdown.innerHTML = '';
+                
+                let total = 0;
+                
+                for (const [location, costs] of Object.entries(costData)) {
+                    const locationTotal = costs.hotel + costs.transport + costs.food + costs.attractions;
+                    total += locationTotal;
+                    
+                    const locationDiv = document.createElement('div');
+                    locationDiv.innerHTML = <h3>${location} (per day)</h3>;
+                    costBreakdown.appendChild(locationDiv);
+                    
+                    for (const [category, amount] of Object.entries(costs)) {
+                        const costItem = document.createElement('div');
+                        costItem.classList.add('cost-item');
+                        costItem.innerHTML = `
+                            <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                            <span>₹${amount}</span>
+                        `;
+                        costBreakdown.appendChild(costItem);
+                    }
+                    
+                    const locationTotalItem = document.createElement('div');
+                    locationTotalItem.classList.add('cost-item');
+                    locationTotalItem.innerHTML = `
+                        <span>Total for ${location}</span>
+                        <span>₹${locationTotal}</span>
+                    `;
+                    costBreakdown.appendChild(locationTotalItem);
+                }
+                
+                const overallTotal = document.createElement('div');
+                overallTotal.classList.add('cost-item');
+                overallTotal.innerHTML = `
+                    <span>Estimated total for 3 days</span>
+                    <span>₹${total * 3}</span>
+                `;
+                costBreakdown.appendChild(overallTotal);
+            }
+            
+            // Function to generate calendar
+            function generateCalendar() {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                
+                // Set current month text
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+                currentMonthElement.textContent = ${monthNames[month]} ${year};
+                
+                // Clear previous calendar
+                calendarGrid.innerHTML = '';
+                
+                // Add day headers
+                const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                for (let i = 0; i < 7; i++) {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.classList.add('day-header');
+                    dayHeader.textContent = dayNames[i];
+                    calendarGrid.appendChild(dayHeader);
+                }
+                
+                // Get first day of month and total days
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Add empty cells for days before first day of month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('calendar-cell', 'disabled');
+                    calendarGrid.appendChild(emptyCell);
+                }
+                
+                // Add cells for each day of the month
+                const today = new Date();
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('calendar-cell');
+                    cell.textContent = i;
+                    
+                    // Disable past dates
+                    if (year < today.getFullYear() || 
+                        (year === today.getFullYear() && month < today.getMonth()) || 
+                        (year === today.getFullYear() && month === today.getMonth() && i < today.getDate())) {
+                        cell.classList.add('disabled');
+                    } else {
+                        // Add click event for selectable dates
+                        cell.addEventListener('click', function() {
+                            // Remove previous selection
+                            const selected = document.querySelector('.calendar-cell.selected');
+                            if (selected) {
+                                selected.classList.remove('selected');
+                            }
+                            
+                            // Select this date
+                            cell.classList.add('selected');
+                            selectedDate = new Date(year, month, i);
+                        });
+                    }
+                    
+                    calendarGrid.appendChild(cell);
+                }
+            }
+            
+            // Function to generate itinerary
+            function generateItinerary() {
+                if (!selectedDate) {
+                    alert("Please select a start date for your itinerary.");
+                    return;
+                }
+                
+                itineraryContent.innerHTML = '';
+                
+                const itineraryDays = itineraryData[selectedDays];
+                const startDate = new Date(selectedDate);
+                
+                for (let i = 0; i < selectedDays; i++) {
+                    const dayDate = new Date(startDate);
+                    dayDate.setDate(startDate.getDate() + i);
+                    
+                    const dayDiv = document.createElement('div');
+                    dayDiv.classList.add('itinerary-day');
+                    
+                    const dayHeading = document.createElement('h4');
+                    dayHeading.textContent = Day ${i+1}: ${dayDate.toDateString()};
+                    dayDiv.appendChild(dayHeading);
+                    
+                    const activitiesList = document.createElement('ul');
+                    activitiesList.classList.add('itinerary-activities');
+                    
+                    const activityItem = document.createElement('li');
+                    activityItem.textContent = itineraryDays[i] || Day ${i+1} activities to be planned;
+                    activitiesList.appendChild(activityItem);
+                    
+                    dayDiv.appendChild(activitiesList);
+                    itineraryContent.appendChild(dayDiv);
+                }
+                
+                itineraryDisplay.style.display = 'block';
+            }
+            
+            // Initialize the application
+            init();
+        });
+    </script>
+</body>
+</html>

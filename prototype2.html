@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jharkhand Tourism - Explore the Land of Forests</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --light: #f5f5f5;
+            --dark: #333;
+            --gray: #757575;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+        
+        .auth-buttons button {
+            padding: 8px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .login-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary) !important;
+        }
+        
+        .register-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .auth-buttons button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        /* Destinations Section */
+        .destinations {
+            padding: 80px 0;
+            background: #f5f5f5;
+        }
+        
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn.active, .category-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .destination-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .destination-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .destination-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .destination-content {
+            padding: 20px;
+        }
+        
+        .destination-content h3 {
+            margin-bottom: 10px;
+        }
+        
+        .destination-content p {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .destination-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Marketplace Section */
+        .marketplace {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .product-content {
+            padding: 20px;
+        }
+        
+        .product-content h3 {
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .product-content button {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .product-content button:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Itinerary Planner */
+        .itinerary-planner {
+            padding: 80px 0;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .planner-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .planner-content {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .planner-content h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .planner-form {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background: #e68900;
+        }
+        
+        /* Chatbot */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .chatbot-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chatbot-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+        }
+        
+        .chatbot-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbot-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .chatbot-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+        }
+        
+        .chatbot-footer input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .chatbot-footer button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .bot-message {
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 15px 15px 15px 0;
+            align-self: flex-start;
+        }
+        
+        .user-message {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px 15px 0 15px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                margin: 20px 0;
+            }
+            
+            .auth-buttons {
+                margin-top: 10px;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .chatbot-window {
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="https://via.placeholder.com/50x50/2e7d32/ffffff?text=JT" alt="Jharkhand Tourism">
+                <h1>Jharkhand Tourism</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#destinations">Destinations</a></li>
+                    <li><a href="#experiences">Experiences</a></li>
+                    <li><a href="#marketplace">Marketplace</a></li>
+                    <li><a href="#itinerary">Plan Trip</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button class="login-btn">Login</button>
+                <button class="register-btn">Register</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2>Discover the Unexplored Beauty of Jharkhand</h2>
+            <p>Experience breathtaking waterfalls, rich tribal culture, wildlife sanctuaries, and ancient temples in the heart of India</p>
+            <div class="search-box">
+                <input type="text" placeholder="Search destinations, activities, hotels...">
+                <button><i class="fas fa-search"></i> Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose Jharkhand Tourism?</h2>
+                <p>Our platform offers unique features to make your travel experience seamless and memorable</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Itinerary Planning</h3>
+                    <p>Get personalized trip suggestions based on your preferences and interests</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Multilingual Chatbot</h3>
+                    <p>24/7 support in multiple languages for all your travel queries</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Blockchain Security</h3>
+                    <p>Secure and transparent transactions for all your bookings</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-vr-cardboard"></i>
+                    </div>
+                    <h3>AR/VR Previews</h3>
+                    <p>Virtual tours of attractions before you visit in person</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>Real-Time Navigation</h3>
+                    <p>Live transport updates and route optimization</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <h3>E-Marketplace</h3>
+                    <p>Authentic tribal handicrafts and local products</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destinations Section -->
+    <section class="destinations" id="destinations">
+        <div class="container">
+            <div class="section-title">
+                <h2>Explore Jharkhand's Treasures</h2>
+                <p>From ancient temples to wildlife sanctuaries, Jharkhand offers diverse experiences</p>
+            </div>
+            <div class="categories">
+                <button class="category-btn active">All</button>
+                <button class="category-btn">Adventure</button>
+                <button class="category-btn">Heritage</button>
+                <button class="category-btn">Wildlife</button>
+                <button class="category-btn">Waterfalls</button>
+                <button class="category-btn">Religious</button>
+            </div>
+            <div class="destinations-grid">
+                <div class="destination-card">
+                    <div class="destination-img" style="background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="destination-content">
+                        <h3>Betla National Park</h3>
+                        <p>Explore the rich biodiversity of one of India's first tiger reserves with dense forests and diverse wildlife.</p>
+                        <div class="destination-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Palamu District</span>
+                            <span><i class="fas fa-star"></i> 4.5</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="destination-card">
+                    <div class="destination-img" style="background-image: url('https://images.unsplash.com/photo-1588666309990-d68f08e3d4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="destination-content">
+                        <h3>Dassam Falls</h3>
+                        <p>Witness the majestic waterfall on the Kanchi River, surrounded by lush greenery and rocky terrain.</p>
+                        <div class="destination-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Ranchi District</span>
+                            <span><i class="fas fa-star"></i> 4.7</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="destination-card">
+                    <div class="destination-img" style="background-image: url('https://images.unsplash.com/photo-1587132137056-8dfa40c67eed?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="destination-content">
+                        <h3>Baidyanath Temple</h3>
+                        <p>One of the twelve Jyotirlingas, this sacred temple attracts millions of devotees each year.</p>
+                        <div class="destination-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Deoghar</span>
+                            <span><i class="fas fa-star"></i> 4.8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketplace Section -->
+    <section class="marketplace" id="marketplace">
+        <div class="container">
+            <div class="section-title">
+                <h2>Local Marketplace</h2>
+                <p>Authentic tribal handicrafts, textiles, and local products directly from artisans</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="product-content">
+                        <h3>Dhokra Art Metal Craft</h3>
+                        <p>Traditional tribal metal casting art form</p>
+                        <div class="product-price">₹1,200</div>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1583635140330-0d1ef4ec6875?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="product-content">
+                        <h3>Tassar Silk Saree</h3>
+                        <p>Handwoven silk with traditional tribal motifs</p>
+                        <div class="product-price">₹3,500</div>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1590779033100-9f60a05a013d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="product-content">
+                        <h3>Bamboo Craft</h3>
+                        <p>Eco-friendly bamboo products and decor</p>
+                        <div class="product-price">₹800</div>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1565701497948-49faca1aa1d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                    <div class="product-content">
+                        <h3>Traditional Tribal Jewelry</h3>
+                        <p>Handcrafted silver and bead jewelry</p>
+                        <div class="product-price">₹2,200</div>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Itinerary Planner -->
+    <section class="itinerary-planner" id="itinerary">
+        <div class="container">
+            <div class="planner-container">
+                <div class="planner-content">
+                    <h2>AI-Powered Itinerary Planner</h2>
+                    <p>Let our intelligent system create the perfect travel plan for you based on your preferences, budget, and time constraints.</p>
+                    <p>Our algorithm considers weather conditions, local events, and real-time information to optimize your journey.</p>
+                    <ul>
+                        <li>Personalized daily schedules</li>
+                        <li>Smart route optimization</li>
+                        <li>Budget-friendly options</li>
+                        <li>Local experience recommendations</li>
+                    </ul>
+                </div>
+                <div class="planner-form">
+                    <h3>Plan Your Trip</h3>
+                    <form id="itinerary-form">
+                        <div class="form-group">
+                            <label for="destination">Destination</label>
+                            <select id="destination">
+                                <option value="">Select Destination</option>
+                                <option value="ranchi">Ranchi</option>
+                                <option value="jamshedpur">Jamshedpur</option>
+                                <option value="deoghar">Deoghar</option>
+                                <option value="netarhat">Netarhat</option>
+                                <option value="betla">Betla National Park</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="travel-date">Travel Dates</label>
+                            <input type="date" id="travel-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration (Days)</label>
+                            <input type="number" id="duration" min="1" max="30" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label for="travelers">Number of Travelers</label>
+                            <input type="number" id="travelers" min="1" max="20" value="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="interests">Interests</label>
+                            <select id="interests">
+                                <option value="adventure">Adventure</option>
+                                <option value="culture">Culture & Heritage</option>
+                                <option value="nature">Nature & Wildlife</option>
+                                <option value="religious">Religious</option>
+                                <option value="relaxation">Relaxation</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="budget">Budget (₹)</label>
+                            <input type="number" id="budget" min="1000" value="10000">
+                        </div>
+                        <button type="submit" class="submit-btn">Generate Itinerary</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button class="chatbot-btn" id="chatbot-toggle">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="chatbot-window" id="chatbot-window">
+            <div class="chatbot-header">
+                <h3>Tourism Assistant</h3>
+                <button id="close-chatbot"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-body" id="chatbot-body">
+                <div class="message bot-message">
+                    Hello! I'm your Jharkhand tourism assistant. How can I help you today?
+                </div>
+            </div>
+            <div class="chatbot-footer">
+                <input type="text" id="chat-input" placeholder="Type your message...">
+                <button id="send-message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Jharkhand Tourism</h3>
+                    <p>Discover the unexplored beauty of Jharkhand with our comprehensive tourism platform.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#destinations">Destinations</a></li>
+                        <li><a href="#experiences">Cultural Experiences</a></li>
+                        <li><a href="#marketplace">Marketplace</a></li>
+                        <li><a href="#itinerary">Plan Your Trip</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety Guidelines</a></li>
+                        <li><a href="#">Feedback</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Tourism Department, Jharkhand</li>
+                        <li><i class="fas fa-phone"></i> +91 123 456 7890</li>
+                        <li><i class="fas fa-envelope"></i> info@jharkhandtourism.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Jharkhand Tourism. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Chatbot functionality
+        document.getElementById('chatbot-toggle').addEventListener('click', function() {
+            document.getElementById('chatbot-window').style.display = 'flex';
+        });
+        
+        document.getElementById('close-chatbot').addEventListener('click', function() {
+            document.getElementById('chatbot-window').style.display = 'none';
+        });
+        
+        document.getElementById('send-message').addEventListener('click', function() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user-message';
+                userMessage.textContent = message;
+                document.getElementById('chatbot-body').appendChild(userMessage);
+                
+                // Clear input
+                input.value = '';
+                
+                // Simulate bot response
+                setTimeout(function() {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    
+                    // Simple response logic
+                    if (message.toLowerCase().includes('hotel') || message.toLowerCase().includes('accommodation')) {
+                        botMessage.textContent = 'We have various accommodation options from luxury hotels to homestays. Would you like me to help you book one?';
+                    } else if (message.toLowerCase().includes('transport') || message.toLowerCase().includes('travel')) {
+                        botMessage.textContent = 'We provide real-time transport information and can help you book taxis, buses, or trains. What is your preferred mode of transport?';
+                    } else if (message.toLowerCase().includes('weather')) {
+                        botMessage.textContent = 'The weather in Jharkhand varies by season. Currently, it\'s pleasant for travel. Would you like specific weather information for a particular destination?';
+                    } else {
+                        botMessage.textContent = 'Thank you for your message. How else can I assist with your Jharkhand travel plans?';
+                    }
+                    
+                    document.getElementById('chatbot-body').appendChild(botMessage);
+                    document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
+                }, 1000);
+                
+                document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
+            }
+        });
+        
+        // Allow sending message with Enter key
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('send-message').click();
+            }
+        });
+        
+        // Itinerary form submission
+        document.getElementById('itinerary-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Your itinerary request has been submitted! Our AI system is generating personalized recommendations for you.');
+        });
+        
+        // Category buttons
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
